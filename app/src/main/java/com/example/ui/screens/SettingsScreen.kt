@@ -1,5 +1,9 @@
 package com.example.ui.screens
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -71,6 +75,8 @@ fun SettingsScreen(
     val context = LocalContext.current
     val isIgnoringBattery by viewModel.isIgnoringBatteryOptimizations.collectAsState()
     val isLoopEnabled by viewModel.isLoopEnabled.collectAsState()
+    val notificationsAllowed = Build.VERSION.SDK_INT < 33 ||
+        androidx.core.content.ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
 
     LazyColumn(
         modifier = Modifier
@@ -80,6 +86,47 @@ fun SettingsScreen(
     ) {
         item {
             Spacer(modifier = Modifier.height(8.dp))
+            Text("Permissions & Background Access", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+            Text("Live status below is based on actual Android system checks.", fontSize = 12.sp, color = TextSecondary)
+            Spacer(modifier = Modifier.height(4.dp))
+            PermissionStatusRow(
+                title = "Notifications",
+                status = if (notificationsAllowed) "Allowed" else "Not allowed",
+                ready = notificationsAllowed,
+                onFix = if (notificationsAllowed) null else ({
+                    context.startActivity(Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                        putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                    })
+                })
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            PermissionStatusRow(
+                title = "Local media access",
+                status = "Available via Android system picker",
+                ready = true,
+                onFix = null
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            PermissionStatusRow(
+                title = "Background streaming setup",
+                status = if (notificationsAllowed && isIgnoringBattery) "Ready" else "Needs setup",
+                ready = notificationsAllowed && isIgnoringBattery,
+                onFix = if (notificationsAllowed && isIgnoringBattery) null else ({
+                    try {
+                        context.startActivity(Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
+                            data = Uri.parse("package:" + context.packageName)
+                        })
+                    } catch (_: Exception) {
+                        context.startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                            data = Uri.parse("package:" + context.packageName)
+                        })
+                    }
+                })
+            )
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(4.dp))
             // Battery Optimization Guidance
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -285,6 +332,44 @@ fun SettingsScreen(
                 }
             }
             Spacer(modifier = Modifier.height(24.dp))
+        }
+    }
+}
+
+@Composable
+private fun PermissionStatusRow(
+    title: String,
+    status: String,
+    ready: Boolean,
+    onFix: (() -> Unit)?
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = DarkSurface),
+        shape = RoundedCornerShape(14.dp),
+        border = androidx.compose.foundation.BorderStroke(
+            1.dp, if (ready) AccentEmerald.copy(alpha = .4f) else StatusAmber.copy(alpha = .6f)
+        )
+    ) {
+        Row(
+            Modifier.fillMaxWidth().padding(14.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                if (ready) Icons.Default.Check else Icons.Default.Warning,
+                null,
+                tint = if (ready) AccentEmerald else StatusAmber
+            )
+            Spacer(Modifier.width(10.dp))
+            Column(Modifier.weight(1f)) {
+                Text(title, color = TextPrimary, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+                Text(status, color = if (ready) AccentEmerald else StatusAmber, fontSize = 12.sp)
+            }
+            if (onFix != null) {
+                OutlinedButton(onClick = onFix, shape = RoundedCornerShape(9.dp)) {
+                    Text("Fix", fontSize = 11.sp)
+                }
+            }
         }
     }
 }
