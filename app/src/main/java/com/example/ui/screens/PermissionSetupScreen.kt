@@ -50,7 +50,9 @@ fun PermissionSetupScreen(viewModel: MainViewModel, onComplete: () -> Unit) {
         batteryOk = batteryUnrestricted(context)
     }
 
-    // Battery optimization and OEM auto-start are device-specific recommendations,\n    // not blockers. Android must allow the user to continue even when those settings\n    // are unavailable or intentionally left unchanged.\n    val allRequired = notificationOk
+    // Battery optimization and OEM auto-start are device-specific recommendations, not blockers.
+    // Android must allow the user to continue even when those settings are unavailable.
+    val allRequired = notificationOk
     val launcher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { result ->
