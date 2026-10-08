@@ -50,7 +50,7 @@ fun PermissionSetupScreen(viewModel: MainViewModel, onComplete: () -> Unit) {
         batteryOk = batteryUnrestricted(context)
     }
 
-    val allRequired = notificationOk && batteryOk
+    // Battery optimization and OEM auto-start are device-specific recommendations,\n    // not blockers. Android must allow the user to continue even when those settings\n    // are unavailable or intentionally left unchanged.\n    val allRequired = notificationOk
     val launcher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { result ->
@@ -71,7 +71,7 @@ fun PermissionSetupScreen(viewModel: MainViewModel, onComplete: () -> Unit) {
     ) {
         Spacer(Modifier.height(18.dp))
         Text("Set up LocalStream Live", color = TextPrimary, fontSize = 28.sp, fontWeight = FontWeight.Bold)
-        Text("Allow the required access once to enable reliable background LIVE streaming.",
+        Text("Allow the required access once. Battery and OEM background controls can be configured later.",
             color = TextSecondary, fontSize = 14.sp, lineHeight = 20.sp)
 
         PermissionRow(Icons.Default.Notifications, "Notifications",
@@ -91,7 +91,7 @@ fun PermissionSetupScreen(viewModel: MainViewModel, onComplete: () -> Unit) {
                 Icon(Icons.Default.Settings, null, tint = AccentCyan)
                 Spacer(Modifier.width(10.dp))
                 Column {
-                    Text("OEM Auto-start / Background Activity", color = TextPrimary, fontWeight = FontWeight.SemiBold)
+                    Text("OEM Auto-start / Background Activity (Optional)", color = TextPrimary, fontWeight = FontWeight.SemiBold)
                     Text("Android has no universal auto-start runtime permission. If your device exposes OEM controls, use App System Settings.",
                         color = TextSecondary, fontSize = 12.sp, lineHeight = 17.sp)
                     Spacer(Modifier.height(8.dp))
@@ -138,7 +138,7 @@ fun PermissionSetupScreen(viewModel: MainViewModel, onComplete: () -> Unit) {
             shape = RoundedCornerShape(14.dp)
         ) {
             if (busy) CircularProgressIndicator(Modifier.size(20.dp), color = Color.White)
-            else Text(if (allRequired) "SETUP COMPLETE — CONTINUE" else "ALLOW ALL REQUIRED ACCESS",
+            else Text(if (allRequired) "CONTINUE" else "ALLOW REQUIRED ACCESS",
                 fontWeight = FontWeight.Bold)
         }
 
@@ -151,7 +151,7 @@ fun PermissionSetupScreen(viewModel: MainViewModel, onComplete: () -> Unit) {
                 } catch (_: Exception) {
                     context.startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
                 }
-            }, modifier = Modifier.fillMaxWidth()) { Text("Allow Unrestricted Battery Activity") }
+            }, modifier = Modifier.fillMaxWidth()) { Text("Allow Unrestricted Battery Activity (Optional)") }
         }
 
         Text("Local videos stay on this phone. The app does not upload them to cloud storage.",
