@@ -29,6 +29,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val playlistManager = PlaylistManager.getInstance(application)
     private val secureStorage = SecureStorage(application)
+    private val setupPrefs = application.getSharedPreferences("localstream_setup", Context.MODE_PRIVATE)
+
+    fun isPermissionSetupComplete(): Boolean = setupPrefs.getBoolean("permission_setup_complete", false)
+
+    fun markPermissionSetupComplete() {
+        setupPrefs.edit().putBoolean("permission_setup_complete", true).apply()
+    }
+
+    fun resetPermissionSetup() {
+        setupPrefs.edit().putBoolean("permission_setup_complete", false).apply()
+    }
 
     // Playlist state
     val playlist: StateFlow<List<VideoItem>> = playlistManager.playlist
