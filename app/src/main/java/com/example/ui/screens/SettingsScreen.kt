@@ -2,8 +2,6 @@ package com.example.ui.screens
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.os.Build
-
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
