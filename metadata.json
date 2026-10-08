@@ -1,0 +1,6 @@
+{
+  "name": "LocalStream Live",
+  "description": "Stream local video playlists continuously to YouTube Live with background foreground service and RTMP pipeline",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
