@@ -1,8 +1,8 @@
 package com.example.ui.theme
 
 import android.app.Activity
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
@@ -30,11 +30,12 @@ private val DarkColorScheme = darkColorScheme(
     outlineVariant = DarkCardBorder
 )
 
+private val AppTypography = Typography()
+
 @Composable
 fun LocalStreamLiveTheme(
     content: @Composable () -> Unit
 ) {
-    val colorScheme = DarkColorScheme
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
@@ -49,8 +50,8 @@ fun LocalStreamLiveTheme(
     }
 
     MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
+        colorScheme = DarkColorScheme,
+        typography = AppTypography,
         content = content
     )
 }
