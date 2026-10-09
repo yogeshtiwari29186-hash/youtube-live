@@ -80,11 +80,7 @@ class RtmpClient(
         }
 
         override fun onNewBitrate(bitrate: Long) {
-            listener?.onStatsUpdated(
-                bitrate.toInt(),
-                0,
-                rootClient.droppedVideoFrames + rootClient.droppedAudioFrames
-            )
+            listener?.onStatsUpdated(bitrate.toInt(), 0, 0)
         }
     })
 
